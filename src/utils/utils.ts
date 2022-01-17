@@ -2,7 +2,7 @@ import { App, News } from './types';
 
 export const appToEmbed = (app: App) => {
 	return {
-		title: `Click here for ${app.version} IPA`,
+		title: `Click here for ${app.version} IPA${app.beta ? ' (Beta)' : ''}`,
 		description: app.versionDescription,
 		url: app.downloadURL,
 		color: parseInt(app.tintColor, 16),
@@ -25,13 +25,13 @@ export const newsToEmbed = (news: News) => {
 		description: news.caption,
 		color: parseInt(news.tintColor, 16),
 		author: {
-			name: news.source
+			name: news.source,
 		},
 		image: {
-			url: news.imageURL
+			url: news.imageURL,
 		},
 		footer: {
-			text: `${news.identifier} | ${news.date}`
-		}
+			text: `${news.identifier} | ${news.date}`,
+		},
 	};
 };
