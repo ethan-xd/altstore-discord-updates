@@ -1,4 +1,5 @@
-config.json
+src/config.json
+cache.json
 
 # Logs
 logs

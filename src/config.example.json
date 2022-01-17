@@ -1,0 +1,8 @@
+{
+  "webhookUrl": "",
+  "roleID": "",
+  "sources": [
+    "https://cdn.altstore.io/file/altstore/apps.json"
+  ],
+  "cacheFile": "cache.json"
+}

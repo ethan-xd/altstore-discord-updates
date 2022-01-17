@@ -43,5 +43,8 @@
   },
   "engines": {
     "npm": ">=7.11.1"
+  },
+  "dependencies": {
+    "axios": "^0.24.0"
   }
 }
