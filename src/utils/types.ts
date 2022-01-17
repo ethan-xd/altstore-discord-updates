@@ -1,3 +1,12 @@
+export interface Repo {
+	name: string;
+	identifier: string;
+	sourceURL: string;
+	apps: App[];
+	news: News[];
+	userInfo: UserInfo;
+}
+
 export interface App {
 	beta?: boolean;
 	bundleIdentifier: string;
@@ -32,6 +41,10 @@ export interface News {
 	appID?: string;
 	url?: string;
 	sourceName: string;
+}
+
+export interface UserInfo {
+	patreonAccessToken: string;
 }
 
 export interface Cache {

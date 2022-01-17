@@ -3,7 +3,7 @@ import cfg from './config.json';
 import * as fs from 'fs';
 import axios from 'axios';
 
-import { App, News, Cache } from './utils/types';
+import { App, News, Cache, Repo } from './utils/types';
 import { appToEmbed, newsToEmbed } from './utils/utils';
 
 (async () => {
@@ -17,7 +17,7 @@ import { appToEmbed, newsToEmbed } from './utils/utils';
 		);
 	}
 
-	const cache = JSON.parse(fs.readFileSync(cfg.cacheFile).toString());
+	const cache: Cache = JSON.parse(fs.readFileSync(cfg.cacheFile).toString());
 
 	const newCache: Cache = {
 		app: {},
@@ -28,7 +28,7 @@ import { appToEmbed, newsToEmbed } from './utils/utils';
 	const newNews: News[] = [];
 
 	for (const sourceURL of cfg.sources) {
-		const source = (await axios.get(sourceURL)).data;
+		const source: Repo = (await axios.get(sourceURL)).data;
 
 		newCache.app[source.identifier] = {};
 		newCache.news[source.identifier] = [];
