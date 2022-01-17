@@ -25,7 +25,7 @@ export const newsToEmbed = (news: News) => {
 		description: news.caption,
 		color: parseInt(news.tintColor, 16),
 		author: {
-			name: news.source,
+			name: news.sourceName,
 		},
 		image: {
 			url: news.imageURL,

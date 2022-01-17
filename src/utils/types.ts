@@ -22,19 +22,19 @@ export interface AppPermission {
 }
 
 export interface News {
-	title:      string;
+	title: string;
 	identifier: string;
-	caption:    string;
-	tintColor:  string;
-	imageURL?:  string;
-	date:       string;
-	notify:     boolean;
-	appID?:     string;
-	url?:       string;
-	source: string;
+	caption: string;
+	tintColor: string;
+	imageURL?: string;
+	date: string;
+	notify: boolean;
+	appID?: string;
+	url?: string;
+	sourceName: string;
 }
 
 export interface Cache {
-	app: { [source: string]: { [app: string]: string }}
-	news: { [source: string]: string[]}
+	app: { [source: string]: { [app: string]: string } };
+	news: { [source: string]: string[] };
 }

@@ -21,7 +21,7 @@ import { appToEmbed, newsToEmbed } from './utils/utils';
 
 	const newCache: Cache = {
 		app: {},
-		news: {}
+		news: {},
 	};
 
 	const updatedApps: App[] = [];
@@ -38,7 +38,8 @@ import { appToEmbed, newsToEmbed } from './utils/utils';
 				cache.app[source.identifier] === undefined ||
 				cache.app[source.identifier][app.bundleIdentifier] === undefined ||
 				cache.app[source.identifier][app.bundleIdentifier] !== app.version
-			) updatedApps.push(app);
+			)
+				updatedApps.push(app);
 
 			newCache.app[source.identifier]![app.bundleIdentifier] = app.version;
 		});
@@ -48,7 +49,7 @@ import { appToEmbed, newsToEmbed } from './utils/utils';
 				cache.news[source.identifier] === undefined ||
 				!cache.news[source.identifier].includes(news.identifier)
 			) {
-				news.source = source.identifier;
+				news.sourceName = source.name;
 				newNews.push(news);
 			}
 
@@ -57,15 +58,17 @@ import { appToEmbed, newsToEmbed } from './utils/utils';
 		});
 	}
 
-	if (updatedApps.length !== 0) await axios.post(cfg.webhookUrl, {
-		content: `<@&${cfg.roleID}>`,
-		embeds: updatedApps.map(appToEmbed)
-	});
+	if (updatedApps.length !== 0)
+		await axios.post(cfg.webhookUrl, {
+			content: `<@&${cfg.roleID}>`,
+			embeds: updatedApps.map(appToEmbed),
+		});
 
-	if (newNews.length !== 0) await axios.post(cfg.webhookUrl, {
-		content: `<@&${cfg.roleID}>`,
-		embeds: newNews.map(newsToEmbed)
-	});
+	if (newNews.length !== 0)
+		await axios.post(cfg.webhookUrl, {
+			content: `<@&${cfg.roleID}>`,
+			embeds: newNews.map(newsToEmbed),
+		});
 
 	fs.writeFileSync(cfg.cacheFile, JSON.stringify(newCache));
 })();
