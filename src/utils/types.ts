@@ -40,7 +40,6 @@ export interface News {
 	notify: boolean;
 	appID?: string;
 	url?: string;
-	sourceName: string;
 }
 
 export interface UserInfo {
@@ -50,4 +49,14 @@ export interface UserInfo {
 export interface Cache {
 	app: { [source: string]: { [app: string]: string } };
 	news: { [source: string]: string[] };
+}
+
+export interface UpdatedApp {
+	source: string;
+	app: App;
+}
+
+export interface UpdatedNews {
+	source: string;
+	news: News;
 }

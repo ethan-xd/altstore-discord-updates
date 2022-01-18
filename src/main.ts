@@ -3,71 +3,61 @@ import cfg from './config.json';
 import * as fs from 'fs';
 import axios from 'axios';
 
-import { App, News, Cache, Repo } from './utils/types';
+import { UpdatedApp, UpdatedNews, Cache, Repo } from './utils/types';
 import { appToEmbed, newsToEmbed } from './utils/utils';
 
 (async () => {
+	const initialCache = { app: {}, news: {} } as const;
 	if (!fs.existsSync(cfg.cacheFile)) {
-		fs.writeFileSync(
-			cfg.cacheFile,
-			JSON.stringify({
-				app: {},
-				news: [],
-			}),
-		);
+		fs.writeFileSync(cfg.cacheFile, JSON.stringify(initialCache));
 	}
 
 	const cache: Cache = JSON.parse(fs.readFileSync(cfg.cacheFile).toString());
 
-	const newCache: Cache = {
-		app: {},
-		news: {},
-	};
+	const updatedApps: UpdatedApp[] = [];
+	const newNews: UpdatedNews[] = [];
 
-	const updatedApps: App[] = [];
-	const newNews: News[] = [];
+	const repoData: Repo[] = await Promise.all(
+		cfg.sources.map(async (sourceURL) => (await axios.get(sourceURL)).data),
+	);
 
-	for (const sourceURL of cfg.sources) {
-		const source: Repo = (await axios.get(sourceURL)).data;
-
-		newCache.app[source.identifier] = {};
-		newCache.news[source.identifier] = [];
-
-		source.apps.forEach((app: App) => {
-			if (
-				cache.app[source.identifier] === undefined ||
-				cache.app[source.identifier][app.bundleIdentifier] === undefined ||
-				cache.app[source.identifier][app.bundleIdentifier] !== app.version
-			)
-				updatedApps.push(app);
-
-			newCache.app[source.identifier]![app.bundleIdentifier] = app.version;
-		});
-
-		source.news.forEach((news: News) => {
-			if (
-				cache.news[source.identifier] === undefined ||
-				!cache.news[source.identifier].includes(news.identifier)
-			) {
-				news.sourceName = source.name;
-				newNews.push(news);
-			}
-
-			// @ts-ignore
-			newCache.news[source.identifier].push(news.identifier);
-		});
-	}
+	const newCache: Cache = repoData.reduce(
+		(result: Cache, source) => ({
+			app: {
+				...result.app,
+				[source.identifier]: source.apps.reduce((previousApp: Cache['app'][string], app) => {
+					if (cache.app[source.identifier]?.[app.bundleIdentifier] !== app.version) {
+						updatedApps.push({ app, source: source.name });
+					}
+					return {
+						...previousApp,
+						[app.bundleIdentifier]: app.version,
+					};
+				}, {}),
+			},
+			news: {
+				...result.news,
+				[source.identifier]: source.news.map((news) => {
+					if (!cache.news[source.identifier]?.includes(news.identifier)) {
+						newNews.push({ news, source: source.name });
+					}
+					return news.identifier;
+				}),
+			},
+		}),
+		initialCache,
+	);
 
 	if (updatedApps.length !== 0)
 		await axios.post(cfg.webhookUrl, {
 			content: `<@&${cfg.roleID}>`,
-			embeds: updatedApps.map(appToEmbed),
+			embeds: updatedApps.map(({ app, source }) => appToEmbed(app, source)),
 		});
 
 	if (newNews.length !== 0)
 		await axios.post(cfg.webhookUrl, {
 			content: `<@&${cfg.roleID}>`,
-			embeds: newNews.map(newsToEmbed),
+			embeds: newNews.map(({ news, source }) => newsToEmbed(news, source)),
 		});
 
 	fs.writeFileSync(cfg.cacheFile, JSON.stringify(newCache));
