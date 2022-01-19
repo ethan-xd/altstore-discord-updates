@@ -11,12 +11,10 @@ export const appToEmbed = (app: App, sourceName: string): APIEmbed => {
 			name: app.name,
 			icon_url: app.iconURL,
 		},
+		footer: {
+			text: sourceName,
+		},
 		timestamp: app.versionDate,
-		fields: [
-			{ inline: true, name: 'source', value: sourceName },
-			{ inline: true, name: 'id', value: app.bundleIdentifier },
-			{ inline: true, name: 'developer', value: app.developerName },
-		],
 		...(typeof app.screenshotURLs[0] === 'undefined'
 			? {}
 			: {
@@ -35,10 +33,6 @@ export const newsToEmbed = (news: News, sourceName: string): APIEmbed => {
 		author: {
 			name: sourceName,
 		},
-		fields: [
-			{ inline: true, name: 'source', value: sourceName },
-			{ inline: true, name: 'id', value: news.identifier },
-		],
 		timestamp: news.date,
 		...(typeof news.imageURL === 'undefined'
 			? {}
