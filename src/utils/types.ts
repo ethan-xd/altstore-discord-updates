@@ -1,3 +1,12 @@
+export interface Repo {
+	name: string;
+	identifier: string;
+	sourceURL: string;
+	apps: App[];
+	news: News[];
+	userInfo: UserInfo;
+}
+
 export interface App {
 	beta?: boolean;
 	bundleIdentifier: string;
@@ -31,10 +40,23 @@ export interface News {
 	notify: boolean;
 	appID?: string;
 	url?: string;
-	sourceName: string;
+}
+
+export interface UserInfo {
+	patreonAccessToken: string;
 }
 
 export interface Cache {
 	app: { [source: string]: { [app: string]: string } };
 	news: { [source: string]: string[] };
+}
+
+export interface UpdatedApp {
+	source: string;
+	app: App;
+}
+
+export interface UpdatedNews {
+	source: string;
+	news: News;
 }
