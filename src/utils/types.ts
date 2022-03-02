@@ -60,3 +60,10 @@ export interface UpdatedNews {
 	source: string;
 	news: News;
 }
+
+export interface Config {
+	webhookUrl: string;
+	roleID: string;
+	sources: string[];
+	cacheFile: string;
+}
