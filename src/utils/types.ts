@@ -65,5 +65,4 @@ export interface Config {
 	webhookUrl: string;
 	roleID: string;
 	sources: string[];
-	cacheFile: string;
 }
