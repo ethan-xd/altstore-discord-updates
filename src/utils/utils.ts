@@ -41,5 +41,10 @@ export const newsToEmbed = (news: News, sourceName: string): APIEmbed => {
 						url: news.imageURL,
 					},
 			  }),
+		...(typeof news.url === 'undefined'
+			? {}
+			: {
+					url: news.url,
+			  }),
 	};
 };
