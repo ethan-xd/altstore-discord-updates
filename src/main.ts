@@ -15,15 +15,13 @@ const cfg = require('../config.json');
 		fs.writeFileSync(cacheFile, JSON.stringify(initialCache));
 	}
 
-	let json: Cache;
+	let cache: Cache;
 
 	try {
-		json = JSON.parse(fs.readFileSync(cacheFile).toString());
+		cache = JSON.parse(fs.readFileSync(cacheFile).toString());
 	} catch (e) {
-		json = initialCache;
+		cache = initialCache;
 	}
-
-	const cache: Cache = json;
 
 	const updatedApps: UpdatedApp[] = [];
 	const newNews: UpdatedNews[] = [];
