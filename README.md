@@ -11,15 +11,13 @@ by a crontab.
 {
 	"webhookUrl": "",
 	"roleID": "",
-	"sources": ["https://cdn.altstore.io/file/altstore/apps.json"],
-	"cacheFile": "cache.json"
+	"sources": ["https://cdn.altstore.io/file/altstore/apps.json"]
 }
 ```
 
 - `webhookUrl`: Discord webhook URL.
 - `roleID`: Discord server role ID to mention.
 - `sources`: All the AltStore repos you wish to track.
-- `cacheFile`: The local cache to not repeat announcements.
 
 ### Running
 

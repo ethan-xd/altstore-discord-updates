@@ -1,24 +1,33 @@
-import cfg from './config.json';
-
 import * as fs from 'fs';
 import axios from 'axios';
 
 import { UpdatedApp, UpdatedNews, Cache, Repo } from './utils/types';
 import { appToEmbed, newsToEmbed } from './utils/utils';
 
+const cfg = require('../config.json');
+
 (async () => {
 	const initialCache = { app: {}, news: {} } as const;
-	if (!fs.existsSync(cfg.cacheFile)) {
-		fs.writeFileSync(cfg.cacheFile, JSON.stringify(initialCache));
+
+	const cacheFile = 'cache.json';
+
+	if (!fs.existsSync(cacheFile)) {
+		fs.writeFileSync(cacheFile, JSON.stringify(initialCache));
 	}
 
-	const cache: Cache = JSON.parse(fs.readFileSync(cfg.cacheFile).toString());
+	let cache: Cache;
+
+	try {
+		cache = JSON.parse(fs.readFileSync(cacheFile).toString());
+	} catch (e) {
+		cache = initialCache;
+	}
 
 	const updatedApps: UpdatedApp[] = [];
 	const newNews: UpdatedNews[] = [];
 
 	const repoData: Repo[] = await Promise.all(
-		cfg.sources.map(async (sourceURL) => (await axios.get(sourceURL)).data),
+		cfg.sources.map(async (sourceURL: string) => (await axios.get(sourceURL)).data),
 	);
 
 	const newCache: Cache = repoData.reduce(
@@ -60,5 +69,5 @@ import { appToEmbed, newsToEmbed } from './utils/utils';
 			embeds: newNews.map(({ news, source }) => newsToEmbed(news, source)),
 		});
 
-	fs.writeFileSync(cfg.cacheFile, JSON.stringify(newCache));
+	fs.writeFileSync(cacheFile, JSON.stringify(newCache));
 })();
