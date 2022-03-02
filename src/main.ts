@@ -8,11 +8,22 @@ const cfg = require('../config.json');
 
 (async () => {
 	const initialCache = { app: {}, news: {} } as const;
-	if (!fs.existsSync(cfg.cacheFile)) {
-		fs.writeFileSync(cfg.cacheFile, JSON.stringify(initialCache));
+
+	const cacheFile = 'cache.json';
+
+	if (!fs.existsSync(cacheFile)) {
+		fs.writeFileSync(cacheFile, JSON.stringify(initialCache));
 	}
 
-	const cache: Cache = JSON.parse(fs.readFileSync(cfg.cacheFile).toString());
+	let json: Cache;
+
+	try {
+		json = JSON.parse(fs.readFileSync(cacheFile).toString());
+	} catch (e) {
+		json = initialCache;
+	}
+
+	const cache: Cache = json;
 
 	const updatedApps: UpdatedApp[] = [];
 	const newNews: UpdatedNews[] = [];
@@ -60,5 +71,5 @@ const cfg = require('../config.json');
 			embeds: newNews.map(({ news, source }) => newsToEmbed(news, source)),
 		});
 
-	fs.writeFileSync(cfg.cacheFile, JSON.stringify(newCache));
+	fs.writeFileSync(cacheFile, JSON.stringify(newCache));
 })();
