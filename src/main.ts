@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import { UpdatedApp, UpdatedNews, Cache, Repo } from './utils/types';
 import { appToEmbed, newsToEmbed } from './utils/utils';
+import { APIEmbed } from 'discord-api-types/payloads/v8/channel';
 
 const cfg = require('../config.json');
 
@@ -60,35 +61,30 @@ const cfg = require('../config.json');
 	const appUpdateCount = updatedApps.length;
 	const newsUpdateCount = newNews.length;
 
-	if (appUpdateCount !== 0) {
+	const sendMessage = async <T>(
+		updateCount: number,
+		updatedThings: T[],
+		mapper: (value: T) => APIEmbed,
+	) => {
+		if (updateCount === 0) return;
 		let contentMessage = `<@&${cfg.roleID}>`;
 
-		if (appUpdateCount > 10) {
-			contentMessage += ` (${appUpdateCount - 10} more update${
-				appUpdateCount - 10 !== 1 ? 's' : ''
+		if (updateCount > 10) {
+			contentMessage += ` (${updateCount - 10} more update${
+				updateCount - 10 !== 1 ? 's' : ''
 			} hidden)`;
 		}
 
 		await axios.post(cfg.webhookUrl, {
 			content: contentMessage,
-			embeds: updatedApps.slice(0, 10).map(({ app, source }) => appToEmbed(app, source)),
+			embeds: updatedThings.slice(0, 10).map(mapper),
 		});
-	}
+	};
 
-	if (newsUpdateCount !== 0) {
-		let contentMessage = `<@&${cfg.roleID}>`;
-
-		if (newsUpdateCount > 10) {
-			contentMessage += ` (${newsUpdateCount - 10} more update${
-				newsUpdateCount - 10 !== 1 ? 's' : ''
-			} hidden)`;
-		}
-
-		await axios.post(cfg.webhookUrl, {
-			content: contentMessage,
-			embeds: newNews.slice(0, 10).map(({ news, source }) => newsToEmbed(news, source)),
-		});
-	}
+	await Promise.all([
+		sendMessage(appUpdateCount, updatedApps, ({ app, source }) => appToEmbed(app, source)),
+		sendMessage(newsUpdateCount, newNews, ({ news, source }) => newsToEmbed(news, source)),
+	]);
 
 	fs.writeFileSync(cacheFile, JSON.stringify(newCache));
 })();
