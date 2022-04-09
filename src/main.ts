@@ -36,7 +36,7 @@ const cfg = require('../config.json');
 				...result.app,
 				[source.identifier]: source.apps.reduce((previousApp: Cache['app'][string], app) => {
 					if (cache.app[source.identifier]?.[app.bundleIdentifier] !== app.version) {
-						updatedApps.push({ app, source: source.name });
+						if (updatedApps.length < 10) updatedApps.push({ app, source: source.name });
 					}
 					return {
 						...previousApp,
@@ -48,7 +48,7 @@ const cfg = require('../config.json');
 				...result.news,
 				[source.identifier]: source.news.map((news) => {
 					if (!cache.news[source.identifier]?.includes(news.identifier)) {
-						newNews.push({ news, source: source.name });
+						if (newNews.length < 10) newNews.push({ news, source: source.name });
 					}
 					return news.identifier;
 				}),
