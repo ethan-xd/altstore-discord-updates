@@ -36,7 +36,7 @@ const cfg = require('../config.json');
 				...result.app,
 				[source.identifier]: source.apps.reduce((previousApp: Cache['app'][string], app) => {
 					if (cache.app[source.identifier]?.[app.bundleIdentifier] !== app.version) {
-						if (updatedApps.length < 10) updatedApps.push({ app, source: source.name });
+						updatedApps.push({ app, source: source.name });
 					}
 					return {
 						...previousApp,
@@ -48,7 +48,7 @@ const cfg = require('../config.json');
 				...result.news,
 				[source.identifier]: source.news.map((news) => {
 					if (!cache.news[source.identifier]?.includes(news.identifier)) {
-						if (newNews.length < 10) newNews.push({ news, source: source.name });
+						newNews.push({ news, source: source.name });
 					}
 					return news.identifier;
 				}),
@@ -56,18 +56,35 @@ const cfg = require('../config.json');
 		}),
 		initialCache,
 	);
+	
+	const appUpdateCount = updatedApps.length;
+	const newsUpdateCount = newNews.length;
 
-	if (updatedApps.length !== 0)
+	if (appUpdateCount !== 0) {
+		let contentMessage = `<@&${cfg.roleID}>`;
+		
+		if (appUpdateCount > 10) {
+			contentMessage += ` (${appUpdateCount - 10} more update${appUpdateCount - 10 !== 1 ? 's' : ''} hidden)`;
+		}
+		
 		await axios.post(cfg.webhookUrl, {
-			content: `<@&${cfg.roleID}>`,
-			embeds: updatedApps.map(({ app, source }) => appToEmbed(app, source)),
+			content: contentMessage,
+			embeds: updatedApps.slice(0, 10).map(({ app, source }) => appToEmbed(app, source)),
 		});
+	}
 
-	if (newNews.length !== 0)
+	if (newsUpdateCount !== 0) {
+		let contentMessage = `<@&${cfg.roleID}>`;
+		
+		if (newsUpdateCount > 10) {
+			contentMessage += ` (${newsUpdateCount - 10} more update${newsUpdateCount - 10 !== 1 ? 's' : ''} hidden)`;
+		}
+	
 		await axios.post(cfg.webhookUrl, {
-			content: `<@&${cfg.roleID}>`,
-			embeds: newNews.map(({ news, source }) => newsToEmbed(news, source)),
+			content: contentMessage,
+			embeds: newNews.slice(0, 10).map(({ news, source }) => newsToEmbed(news, source)),
 		});
+	}
 
 	fs.writeFileSync(cacheFile, JSON.stringify(newCache));
 })();
