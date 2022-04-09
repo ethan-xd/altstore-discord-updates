@@ -56,17 +56,19 @@ const cfg = require('../config.json');
 		}),
 		initialCache,
 	);
-	
+
 	const appUpdateCount = updatedApps.length;
 	const newsUpdateCount = newNews.length;
 
 	if (appUpdateCount !== 0) {
 		let contentMessage = `<@&${cfg.roleID}>`;
-		
+
 		if (appUpdateCount > 10) {
-			contentMessage += ` (${appUpdateCount - 10} more update${appUpdateCount - 10 !== 1 ? 's' : ''} hidden)`;
+			contentMessage += ` (${appUpdateCount - 10} more update${
+				appUpdateCount - 10 !== 1 ? 's' : ''
+			} hidden)`;
 		}
-		
+
 		await axios.post(cfg.webhookUrl, {
 			content: contentMessage,
 			embeds: updatedApps.slice(0, 10).map(({ app, source }) => appToEmbed(app, source)),
@@ -75,11 +77,13 @@ const cfg = require('../config.json');
 
 	if (newsUpdateCount !== 0) {
 		let contentMessage = `<@&${cfg.roleID}>`;
-		
+
 		if (newsUpdateCount > 10) {
-			contentMessage += ` (${newsUpdateCount - 10} more update${newsUpdateCount - 10 !== 1 ? 's' : ''} hidden)`;
+			contentMessage += ` (${newsUpdateCount - 10} more update${
+				newsUpdateCount - 10 !== 1 ? 's' : ''
+			} hidden)`;
 		}
-	
+
 		await axios.post(cfg.webhookUrl, {
 			content: contentMessage,
 			embeds: newNews.slice(0, 10).map(({ news, source }) => newsToEmbed(news, source)),
